@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>全部员工分页</title>
+    <link rel="stylesheet" th:href="@{/static/css/index_work.css}">
+    <script type="text/javascript">
+        $(function () {
+            $("a.delete").click(function () {
+                return confirm("你确定要删除【"+$(this).parent().parent().find("td:first").text()+"】吗")
+            })
+        })
+    </script>
+</head>
+<body>
+<div id="app">
+    <table>
+        <tr>
+            <th colspan="6">员工列表</th>
+        </tr>
+        <tr>
+            <th>编号</th>
+            <th>姓名</th>
+            <th>年龄</th>
+            <th>性别</th>
+            <th>邮箱</th>
+            <th>操作(<a th:href="@{/addEmployee}">添加</a>)</th>
+        </tr>
+        <tr th:each="employee,status : ${page.list}">
+            <td th:text="${status.count}"></td>
+            <td th:text="${employee.empName}"></td>
+            <td th:text="${employee.age}"></td>
+            <td th:text="${employee.sex}"></td>
+            <td th:text="${employee.email}"></td>
+            <td >
+                <a th:href="@{'/employee/'+${employee.empId}}">修改</a>
+                <a class="delete" @click="deleteEmployee()" th:href="@{'/employee/'+${employee.empId}}">删除</a>
+            </td>
+        </tr>
+    </table>
+    <form method="post">
+        <input type="hidden" name="_method" value="delete">
+    </form>
+</div>
+<div style="text-align: center">
+    <a th:if="${page.hasPreviousPage}" th:href="@{/employee/page/1}">首页</a>
+    <a th:if="${page.hasPreviousPage}" th:href="@{'/employee/page/'+${page.prePage}}">上一页</a>
+    <span th:each="pages : ${page.navigatepageNums}">
+        <a th:if="${page.pageNum==pages}" style="color: green" th:href="@{'/employee/page/'+${pages}}" th:text="'['+${pages}+']'"></a>
+        <a th:if="${page.pageNum!=pages}"  th:href="@{'/employee/page/'+${pages}}" th:text="${pages}"></a>
+    </span>
+    <a th:if="${page.hasNextPage}" th:href="@{'/employee/page/'+${page.nextPage}}">下一页</a>
+    <a th:if="${page.hasNextPage}" th:href="@{'/employee/page/'+${page.pages}}">末页</a>
+</div>
+<script type="text/javascript" th:src="@{/static/js/vue.js}"></script>
+<script type="text/javascript">
+    var vue =new Vue({
+        el:"#app",
+        methods:{
+            deleteEmployee(){
+                var form=document.getElementsByTagName("form")[0];
+                form.action=event.target.href;
+                form.submit();
+                event.preventDefault();
+            }
+        }
+    })
+</script>
+</body>
+</html>
